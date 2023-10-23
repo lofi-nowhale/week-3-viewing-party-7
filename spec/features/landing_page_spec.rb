@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe 'Landing Page' do
   before :each do 
-    user1 = User.create(name: "User One", email: "user1@test.com")
-    user2 = User.create(name: "User Two", email: "user2@test.com")
+    user1 = User.create(name: "User One", email: "user1@test.com", password: '123password', password_confirmation: '123password')
+    user2 = User.create(name: "User Two", email: "user2@test.com", password: 'mypassword123', password_confirmation: 'mypassword123')
     visit '/'
   end 
 
