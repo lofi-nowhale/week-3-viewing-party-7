@@ -8,10 +8,21 @@ RSpec.describe 'Movies Index Page' do
       Movie.create(title: "Movie #{i} Title", rating: rand(1..10), description: "This is a description about Movie #{i}")
       i+=1
     end 
+    
   end 
 
   it 'shows all movies' do 
-    visit "users/#{@user1.id}"
+    visit root_path
+
+    click_button "Log In"
+
+    fill_in :email, with: 'user1@test.com'
+    fill_in :password, with: 'password123'
+    click_button "Submit"
+
+    expect(current_path).to eq("/users/#{@user1.id}") 
+
+    expect(page).to have_button("Find Top Rated Movies")
 
     click_button "Find Top Rated Movies"
 

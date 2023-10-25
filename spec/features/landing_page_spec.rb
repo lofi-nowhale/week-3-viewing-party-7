@@ -23,8 +23,23 @@ RSpec.describe 'Landing Page' do
   end 
 
   it 'lists out existing users' do 
-    user1 = User.create(name: "User One", email: "user1@test.com")
-    user2 = User.create(name: "User Two", email: "user2@test.com")
+    visit '/'
+
+    click_button "Create New User" 
+
+    fill_in :user_name, with: "user 1"
+    fill_in :user_email, with: "user@test1.com"
+    fill_in :user_password, with: "mypassword"
+    fill_in :user_password_confirmation, with: "mypassword"
+
+    click_button "Create New User"
+
+    expect(current_path).to eq user_path(User.last)
+
+    click_link "Home"
+
+    user1 = User.create(name: "User One", email: "user1@test.com", password: "pass1", password_confirmation: "pass1")
+    user2 = User.create(name: "User Two", email: "user2@test.com", password: "pass2", password_confirmation: "pass2")
 
     expect(page).to have_content('Existing Users:')
 
@@ -33,4 +48,45 @@ RSpec.describe 'Landing Page' do
       expect(page).to have_content(user2.email)
     end     
   end 
+
+  it 'shows a log out button if the user is logged in' do
+    visit '/'
+
+    click_button "Create New User" 
+
+    fill_in :user_name, with: "user 1"
+    fill_in :user_email, with: "user@test1.com"
+    fill_in :user_password, with: "mypassword"
+    fill_in :user_password_confirmation, with: "mypassword"
+
+    click_button "Create New User"
+
+    expect(current_path).to eq user_path(User.last)
+
+    click_link "Home"
+
+    expect(page).to_not have_button("Create New User")
+    expect(page).to_not have_button("Log In")
+    expect(page).to have_button("Log Out")
+  end
+
+  it "doesn't show the existing users section if user is visiting as a guest" do
+    visit root_path
+
+    expect(page).to_not have_content("Existing Users")
+  end
+
+  it 'wont direct to the dashboard if the user isnt logged in' do
+    user1 = User.create!(name: "User One", email: "HELLO@test.com", password: "pass1", password_confirmation: "pass1")
+    user2 = User.create(name: "User Two", email: "user2@test.com", password: "pass2", password_confirmation: "pass2")
+
+    visit root_path
+
+    visit user_path(user1.id)
+
+    expect(current_path).to eq root_path
+
+    expect(page).to have_content("Please log in or register for an account to access your dashboard")
+
+  end
 end
