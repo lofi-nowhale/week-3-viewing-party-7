@@ -8,8 +8,11 @@ class UsersController <ApplicationController
   end 
 
   def create 
-    user = User.create(user_params)
+    user = user_params
+    user[:email] = user[:email].downcase
+    user = User.new(user_params)
     if user.save
+      session[:user_id] = user.id
       redirect_to user_path(user)
     else  
       flash[:error] = user.errors.full_messages.to_sentence
@@ -23,6 +26,7 @@ class UsersController <ApplicationController
   def login_user
     @user = User.find_by(email: params[:email])
     if @user.authenticate(params[:password])
+      session[:user_id] = @user.id
       flash[:success] = "Welcome, #{@user.name}!"
       redirect_to user_path(@user)
     else 
@@ -30,6 +34,12 @@ class UsersController <ApplicationController
       render :login_form
     end
 
+  end
+
+  def logout
+    reset_session
+    flash[:notice] = "Bye"
+    redirect_to '/'
   end
 
   private 
