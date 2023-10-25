@@ -34,5 +34,24 @@ RSpec.describe 'Landing Page' do
     end     
   end 
 
-  it 'can '
+  it 'shows a log out button if the user is logged in' do
+    visit '/'
+
+    click_button "Create New User" 
+
+    fill_in :user_name, with: "user 1"
+    fill_in :user_email, with: "user@test1.com"
+    fill_in :user_password, with: "mypassword"
+    fill_in :user_password_confirmation, with: "mypassword"
+
+    click_button "Create New User"
+
+    expect(current_path).to eq user_path(User.last)
+
+    click_link "Home"
+
+    expect(page).to_not have_button("Create New User")
+    expect(page).to_not have_button("Log In")
+    expect(page).to have_button("Log Out")
+  end
 end
